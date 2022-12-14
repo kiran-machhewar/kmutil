@@ -1,0 +1,1 @@
+System.debug('<ACCESS_TOKEN> '+UserInfo.getSessionId().replace('00D',''));
