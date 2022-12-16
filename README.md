@@ -2,7 +2,7 @@
 Shell script utility to perform common operations as a salesforce developer
 
 ---
-### sfdx -o bulk-api-get-job-error
+### sh kmutil.sh -o bulk-api-get-job-error
 Fetches the bulk job failed records file and if -s paramter is passed then searches the passed element in the file
 #### Command Syntax
 -j JOB_ID
@@ -23,10 +23,10 @@ Fetches the bulk job failed records file and if -s paramter is passed then searc
 
 -u
 - Optional
-- sfdx org alias
+- sfdx org alias, if not passed default org will be used
 - Type : String
 ---
-### sfdx -o bulk-api-get-job-success
+### sh kmutil.sh -o bulk-api-get-job-success
 Fetches the bulk job success records file and if -s paramter is passed then searches the passed element in the file
 #### Command Syntax
 -j JOB_ID
@@ -42,7 +42,7 @@ Fetches the bulk job success records file and if -s paramter is passed then sear
 
 -u
 - Optional
-- sfdx org alias
+- sfdx org alias, if not passed default org will be used
 - Type : String
 
 -s
@@ -50,7 +50,7 @@ Fetches the bulk job success records file and if -s paramter is passed then sear
 - Search Input String
 - Type : String
 ---
-### sfdx -o bulk-api-abort
+### sh kmutil.sh -o bulk-api-abort
 Aborts the job ids which are passed
 #### Command Syntax
 -f file
@@ -64,7 +64,7 @@ Aborts the job ids which are passed
 
 -u
 - Optional
-- sfdx org alias
+- sfdx org alias, if not passed default org will be used
 - Type : String
 
 -s
@@ -72,7 +72,7 @@ Aborts the job ids which are passed
 - Search Input String
 - Type : String
 ---
-### sfdx -o sf-login
+### sh kmutil.sh -o sf-login
 This is a self guided command, which will ask for multiple paramters
 
  
