@@ -1,7 +1,7 @@
 ### Summary
 Shell script utility to perform common operations as a salesforce developer
 
-
+---
 ### sfdx -o bulk-api-get-job-error
 Fetches the bulk job failed records file and if -s paramter is passed then searches the passed element in the file
 #### Command Syntax
@@ -25,7 +25,7 @@ Fetches the bulk job failed records file and if -s paramter is passed then searc
 - Optional
 - sfdx org alias
 - Type : String
-
+---
 ### sfdx -o bulk-api-get-job-success
 Fetches the bulk job success records file and if -s paramter is passed then searches the passed element in the file
 #### Command Syntax
@@ -49,7 +49,7 @@ Fetches the bulk job success records file and if -s paramter is passed then sear
 - Optional
 - Search Input String
 - Type : String
-
+---
 ### sfdx -o bulk-api-abort
 Aborts the job ids which are passed
 #### Command Syntax
@@ -71,7 +71,7 @@ Aborts the job ids which are passed
 - Optional
 - Search Input String
 - Type : String
-
+---
 ### sfdx -o sf-login
 This is a self guided command, which will ask for multiple paramters
 
