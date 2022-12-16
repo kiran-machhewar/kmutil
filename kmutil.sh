@@ -36,8 +36,14 @@ authenticateToSalesforce() {
   sfdx force:apex:execute -f apexcode.cls -u $sf_alias > output.log  
   access_token=00D$(grep 'DEBUG|<ACCESS_TOKEN>' output.log | cut -d' ' -f3)
   rm output.log
-  #get access and domain from the file
-  echo "**************** Org which will be used: ${sf_alias} Username : ${username} Instance URL: ${instance_url}*****************"
+  #get access and domain from the file   
+  echo "\nWould you like to continue for the instance \033[1m${instance_url}\033[0m with user \033[1m${username}\033[0m (y/n)?"
+  read proceed
+  if [[ "$proceed" != "y" ]] ; 
+  then
+    echo "Exiting program...";
+    exit 1
+  fi
 }
 
 
@@ -64,9 +70,10 @@ doSFLogin() {
   echo $oauth_response
 }
 
-fetchBulkAPIFiles() {  
+getBulkAPIJobResult() {
   echo "sf_alias is : "$sf_alias
   echo "Inside Fetch Bulk API Files"
+  resultType=$1
   if [[ -z "$job_id" ]]
   then
     RED='\033[0;31m'
@@ -78,7 +85,7 @@ fetchBulkAPIFiles() {
   authenticateToSalesforce
   mkdir -p bulk_api_error
   curl -X GET \
-     $instance_url'/services/data/v49.0/jobs/ingest/'$job_id'/failedResults/' \
+     $instance_url'/services/data/v49.0/jobs/ingest/'$job_id'/'$resultType'/' \
      -H "authorization: Bearer "$access_token -o './bulk_api_error/'$job_id'_bulkresultexport.csv'  
   showSuccessFn 'File is generated, please check the file.'
   if ! [[ -z "$search_input" ]]
@@ -95,37 +102,92 @@ fetchBulkAPIFiles() {
   fi
 }
 
+bulkAPIGetJobError() { 
+  authenticateToSalesforce 
+  getBulkAPIJobResult 'failedResults'
+}
+
+bulkAPIGetJobSuccess() {
+  authenticateToSalesforce
+  getBulkAPIJobResult 'successfulResults'
+}
+
+abort_bulk_job() {
+  authenticateToSalesforce
+  while read p; do 
+    echo "\nAborting..${p}"
+    curl -X PATCH -H "authorization: Bearer "$access_token -H 'Content-Type:application/json' \
+    -d @abortjob.json $instance_url/services/data/v56.0/jobs/ingest/${p}
+  done < ./$filename  
+  showSuccessFn "\nAborted All Jobs"  
+}
+
 helpFunction()
 {
    echo ""
    echo "Usage: sh kmutil.sh -o operation -u sf-username"
-   echo -e "\t-o Operation which needs to be performed e.g. bulk-api, sf-login"
+   echo -e "\t-o Operation which needs to be performed e.g. bulk-api-*, sf-login"
    echo -e "\t-u Org to be used, specify alias"
-   echo -e "\t-j Job Id (applicable for bulk-api operation)"
-   echo -e "\t-s Search String (applicable for bulk-api operation)"   
+   echo -e "\t-j Job Id (applicable for bulk-api-* operation)"
+   echo -e "\t-s Search String (applicable for bulk-api operation)" 
+   echo -e "\t-f file (applicable for bulk-api-abort operation)" 
    exit 1 # Exit script after printing help
 }
 
-echo "Operation is "$2
 
-while getopts "o:u:j:s:" opt
+# Parse Arguments
+while [[ $# -gt 0 ]]
 do
-   case "$opt" in
-      o ) operation="$OPTARG" ;;
-      u ) sf_alias="$OPTARG" ;;
-      j ) job_id="$OPTARG" ;;
-      s ) search_input="$OPTARG" ;;
-      ? ) helpFunction ;; # Print helpFunction in case parameter is non-existent
-   esac
+  case "$1" in
+    -h|--help)
+        helpFunction 
+        exit 1 # Exit script after printing help
+        ;;
+    -o)
+        operation=$2
+        shift
+        shift
+        ;;
+    -u)
+        sf_alias=$2
+        shift
+        shift
+        ;;
+    -j)
+        job_id=$2
+        shift
+        shift
+        ;;
+    -s)
+        search_input=$2
+        shift
+        shift
+        ;;
+    -f)
+        filename=$2
+        shift
+        shift
+        ;;
+    -*|--*|*)
+        echo "Unknown option $1"
+        echo "Please use sh kmutil.sh --help"
+        exit 1
+        ;;
+  esac
 done
 
 case "$operation" in  
-  sf-login)
-    
+  sf-login)    
     doSFLogin    
     ;;
-  bulk-api)  
-    fetchBulkAPIFiles      
+  bulk-api-get-job-error)      
+    bulkAPIGetJobError      
+    ;;
+  bulk-api-get-job-success)
+    bulkAPIGetJobSuccess
+    ;;
+  bulk-api-abort)    
+    abort_bulk_job
     ;;
   -*|--*|*)
     echo "Unknown operation"

@@ -1,16 +1,78 @@
 ### Summary
 Shell script utility to perform common operations as a salesforce developer
 
-#### Usage
-sh kmutil.sh -o <operation> [-u|-j|-s]
 
--u : Org which needs to be used, if not passed the default org will be used
+### sfdx -o bulk-api-get-job-error
+Fetches the bulk job failed records file and if -s paramter is passed then searches the passed element in the file
+#### Command Syntax
+-j JOB_ID
 
--j : Job id for which the error file needs to be fetched, applicable only if the operation is bulk-api
+[-s SEARCH_INPUT]
 
--s : Search input, applicable only if the operation is bulk-api
+[-u user-sf-alias]
+##### Paramters
+-j
+- Required
+- Job Id
+- Type : String
 
-#### Example
-```
-sh kmutil.sh -o bulk-api -u kiran-dev  -j 750AA00000AAABC -s search_this_string
-```
+-s
+- Optional
+- Search Input String
+- Type : String
+
+-u
+- Optional
+- sfdx org alias
+- Type : String
+
+### sfdx -o bulk-api-get-job-success
+Fetches the bulk job success records file and if -s paramter is passed then searches the passed element in the file
+#### Command Syntax
+-j JOB_ID
+
+[-u user-sf-alias]
+
+[-s SEARCH_INPUT]
+##### Paramters
+-j
+- Required
+- Job Id
+- Type : String
+
+-u
+- Optional
+- sfdx org alias
+- Type : String
+
+-s
+- Optional
+- Search Input String
+- Type : String
+
+### sfdx -o bulk-api-abort
+Aborts the job ids which are passed
+#### Command Syntax
+-f file
+
+[-u user-sf-alias]
+##### Paramters
+-f
+- Required
+- File which contains ids of the bulk api jobs separated by new lines
+- Type : File
+
+-u
+- Optional
+- sfdx org alias
+- Type : String
+
+-s
+- Optional
+- Search Input String
+- Type : String
+
+### sfdx -o sf-login
+This is a self guided command, which will ask for multiple paramters
+
+ 
