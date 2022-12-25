@@ -67,12 +67,18 @@ Aborts the job ids which are passed
 - sfdx org alias, if not passed default org will be used
 - Type : String
 
--s
-- Optional
-- Search Input String
-- Type : String
 ---
 ### sh kmutil.sh -o sf-login
 This is a self guided command, which will ask for multiple paramters
+
+---
+
+### sh kmutil.sh -o generate-soql-in-clause -f <fileinput>
+This is to create comma separaate ids and copy it to clipboard
+###### Paramters
+-f
+- Required
+- File which contains ids which needs to be part of in clause of SOQL/SQL
+- Type : File
 
  
