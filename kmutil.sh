@@ -82,7 +82,6 @@ getBulkAPIJobResult() {
     showErrorFn 'Error...Please pass the job id. -j <job_id>'
     exit 1
   fi
-  authenticateToSalesforce
   mkdir -p bulk_api_error
   curl -X GET \
      $instance_url'/services/data/v49.0/jobs/ingest/'$job_id'/'$resultType'/' \
@@ -114,12 +113,28 @@ bulkAPIGetJobSuccess() {
 
 abort_bulk_job() {
   authenticateToSalesforce
-  while read p; do 
-    echo "\nAborting..${p}"
+  while read element || [ -n "$element" ]; do 
+    echo "\nAborting..${element}"
     curl -X PATCH -H "authorization: Bearer "$access_token -H 'Content-Type:application/json' \
     -d @abortjob.json $instance_url/services/data/v56.0/jobs/ingest/${p}
   done < ./$filename  
   showSuccessFn "\nAborted All Jobs"  
+}
+
+generateSOQLInClause() {
+  output_string=""
+  index=0
+  while read element || [ -n "$element" ]; do
+    if [[ ${index} -eq 0 ]]
+    then 
+       output_string="('${element}'"
+    else
+       output_string="${output_string},'${element}')"
+    fi
+    let 'index=index+1'
+  done < ./$filename
+  echo ${output_string} | pbcopy  
+  showSuccessFn "Below result is copied to your clipboard:\n${output_string}"
 }
 
 helpFunction()
@@ -188,6 +203,9 @@ case "$operation" in
     ;;
   bulk-api-abort)    
     abort_bulk_job
+    ;;
+  generate-soql-in-clause)
+    generateSOQLInClause
     ;;
   -*|--*|*)
     echo "Unknown operation"
